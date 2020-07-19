@@ -8,15 +8,18 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import pay.jh.me.moneysprinkling.model.MoneySprinkle;
 import pay.jh.me.moneysprinkling.service.MoneySprinklingService;
+import pay.jh.me.moneysprinkling.service.MoneySprinklingValidateService;
 
 @Slf4j
 @RestController
 @RequestMapping
 public class MoneySprinklingContoller {
     private final MoneySprinklingService moneySprinklingService;
+    private final MoneySprinklingValidateService moneySprinklingValidateService;
 
-    public MoneySprinklingContoller(MoneySprinklingService moneySprinklingService) {
+    public MoneySprinklingContoller(MoneySprinklingService moneySprinklingService, MoneySprinklingValidateService moneySprinklingValidateService) {
         this.moneySprinklingService = moneySprinklingService;
+        this.moneySprinklingValidateService = moneySprinklingValidateService;
     }
 
     @PostMapping(value = "/sprinkle")
@@ -25,8 +28,16 @@ public class MoneySprinklingContoller {
         log.info("roomId={}, userId={}, body={}", roomId, userId, moneySprinkle);
         moneySprinkle.setRoomId(roomId);
         moneySprinkle.setUserId(userId);
-        moneySprinkle.setAmount(300);   // param으로 왜 안들어 오는겨???
-        moneySprinkle.setCount(3);  // param으로 왜 안들어 오는겨???
+        moneySprinkle.setAmount(300); // param으로 왜 안들어 오는겨???
+        moneySprinkle.setCount(3); // param으로 왜 안들어 오는겨???
         return moneySprinklingService.sprinkle(roomId, userId, moneySprinkle);
+    }
+
+    @PostMapping(value = "/pick-up")
+    @ResponseBody
+    public double pickup(@RequestHeader("X-USER-ID") String userId, String token) {
+        log.info("userId={}, token={}", userId, token);
+        moneySprinklingValidateService.isValidate(userId, token);
+        return moneySprinklingService.pickup(token, userId);
     }
 }

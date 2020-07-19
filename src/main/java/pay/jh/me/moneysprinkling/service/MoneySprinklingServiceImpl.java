@@ -11,6 +11,8 @@ import pay.jh.me.moneysprinkling.util.TokenGenerator;
 
 import java.util.Random;
 
+import static org.springframework.transaction.annotation.Isolation.SERIALIZABLE;
+
 @Slf4j
 @Service
 public class MoneySprinklingServiceImpl implements MoneySprinklingService {
@@ -39,9 +41,19 @@ public class MoneySprinklingServiceImpl implements MoneySprinklingService {
            moneySprinkleDtlRepository.save(moneySprinkleDtl);
            balance -= moneySprinkleDtl.getAmount();
         }
-
         return moneySprinkle.getToken();
+    }
 
+    @Override
+    @Transactional(isolation = SERIALIZABLE)
+    public double pickup(String token, String userId) {
+        MoneySprinkleDtl moneySprinkleDtl = null; // 테이블 MONEY_SPRINKLE_DTL에서 reviver 가 null 인 데이터 가져오기
+        //moneySprinkleDtlRepository.update(moneySprinkleDtl.getMoneySprinkleDtlSeq(), userId); receiver, receiver at 업데이트
+        return moneySprinkleDtl.getAmount();
+    }
+
+    private boolean isLast(MoneySprinkle moneySprinkle, int index) {
+        return index == moneySprinkle.getCount() -1;
     }
 
     private double getRandomAmount(double balance, Random random) {
@@ -50,9 +62,5 @@ public class MoneySprinklingServiceImpl implements MoneySprinklingService {
 
     private int getNumbersFromOneToNine(Random random) {
         return random.nextInt(9) +1;
-    }
-
-    private boolean isLast(MoneySprinkle moneySprinkle, int index) {
-        return index == moneySprinkle.getCount() -1;
     }
 }
