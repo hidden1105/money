@@ -12,7 +12,7 @@ import pay.jh.me.moneysprinkling.service.MoneySprinklingValidateService;
 
 @Slf4j
 @RestController
-@RequestMapping
+@RequestMapping(value = "/api/v1")
 public class MoneySprinklingContoller {
     private final MoneySprinklingService moneySprinklingService;
     private final MoneySprinklingValidateService moneySprinklingValidateService;
