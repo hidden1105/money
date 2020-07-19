@@ -45,7 +45,11 @@ public class MoneySprinklingServiceImpl implements MoneySprinklingService {
     }
 
     private double getRandomAmount(double balance, Random random) {
-        return balance * (random.nextInt(9) +1) * 0.1;
+        return balance * (getNumbersFromOneToNine(random) * 0.1);
+    }
+
+    private int getNumbersFromOneToNine(Random random) {
+        return random.nextInt(9) +1;
     }
 
     private boolean isLast(MoneySprinkle moneySprinkle, int index) {
