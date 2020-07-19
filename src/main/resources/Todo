@@ -1,0 +1,8 @@
+Todo
+
+o moneySprinkle.setAmount(300); // param으로 왜 안들어 오는겨???
+o token 유니크 보장
+o 응답코드 개선
+o 조회 api개발
+o 테스트 코드작성
+o 유효성 체크 코드 추가
