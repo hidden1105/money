@@ -1,26 +1,15 @@
-package pay.jh.me.moneysprinkling.model;
+package pay.jh.me.moneysprinkling.entity;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
-import lombok.ToString;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@EqualsAndHashCode
-@ToString
 @NoArgsConstructor
 @Entity
 @Table(name = "money_sprinkle_dtl")
