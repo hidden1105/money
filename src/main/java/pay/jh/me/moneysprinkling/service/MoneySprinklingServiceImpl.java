@@ -1,62 +1,82 @@
 package pay.jh.me.moneysprinkling.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import pay.jh.me.moneysprinkling.dao.MoneySprinkleDtlRepository;
 import pay.jh.me.moneysprinkling.dao.MoneySprinkleRepository;
-import pay.jh.me.moneysprinkling.model.MoneySprinkle;
-import pay.jh.me.moneysprinkling.model.MoneySprinkleDtl;
+import pay.jh.me.moneysprinkling.dto.MoneySprinkleRequest;
+import pay.jh.me.moneysprinkling.entity.MoneySprinkle;
+import pay.jh.me.moneysprinkling.entity.MoneySprinkleDtl;
+import pay.jh.me.moneysprinkling.exception.DuplicateTokenException;
 import pay.jh.me.moneysprinkling.util.TokenGenerator;
 
-import java.util.Optional;
 import java.util.Random;
-
-import static org.springframework.transaction.annotation.Isolation.SERIALIZABLE;
 
 @Slf4j
 @Service
 public class MoneySprinklingServiceImpl implements MoneySprinklingService {
-    private final TokenGenerator tokenGenerator;
+    private static final int MAX_RETRY_COUNT = 5;
     private final MoneySprinkleRepository moneySprinkleRepository;
     private final MoneySprinkleDtlRepository moneySprinkleDtlRepository;
 
-    public MoneySprinklingServiceImpl(TokenGenerator tokenGenerator, MoneySprinkleRepository moneySprinkleRepository
+    public MoneySprinklingServiceImpl(
+            MoneySprinkleRepository moneySprinkleRepository
             , MoneySprinkleDtlRepository moneySprinkleDtlRepository) {
-        this.tokenGenerator = tokenGenerator;
         this.moneySprinkleRepository = moneySprinkleRepository;
         this.moneySprinkleDtlRepository = moneySprinkleDtlRepository;
     }
 
     @Transactional
     @Override
-    public String sprinkle(String roomId, String userId, MoneySprinkle moneySprinkle) {
-        moneySprinkle.setToken(tokenGenerator.generate());
-        moneySprinkleRepository.save(moneySprinkle);
+    @Retryable(
+            value = {DuplicateTokenException.class},
+            maxAttempts = MAX_RETRY_COUNT,
+            backoff = @Backoff(delay = 0))
+    public String sprinkle(String roomId, String userId,
+                           MoneySprinkleRequest sprinkleRequest) throws DuplicateTokenException {
+        String newToken = TokenGenerator.generate();
+        moneySprinkleRepository.findByToken(newToken)
+                .ifPresent(s -> {
+                    throw new DuplicateTokenException();
+                });
 
-        double balance = moneySprinkle.getAmount();
+        moneySprinkleRepository.save(MoneySprinkle.builder()
+                .roomId(roomId)
+                .userId(userId)
+                .amount(sprinkleRequest.getAmount())
+                .count(sprinkleRequest.getCount())
+                .token(newToken)
+                .build());
+
+        double balance = sprinkleRequest.getAmount();
         Random random = new Random();
-        for (int index = 0; index < moneySprinkle.getCount(); index++) {
-           MoneySprinkleDtl moneySprinkleDtl = new MoneySprinkleDtl(moneySprinkle.getToken());
-           moneySprinkleDtl.setAmount(isLast(moneySprinkle, index) ? balance : getRandomAmount(balance, random));
-           moneySprinkleDtlRepository.save(moneySprinkleDtl);
-           balance -= moneySprinkleDtl.getAmount();
+        for (int index = 0; index < sprinkleRequest.getCount(); index++) {
+            MoneySprinkleDtl moneySprinkleDtl =
+                    new MoneySprinkleDtl(newToken);
+            moneySprinkleDtl.setAmount(isLast(sprinkleRequest.getCount(), index) ?
+                    balance : getRandomAmount(balance, random));
+            moneySprinkleDtlRepository.save(moneySprinkleDtl);
+            balance -= moneySprinkleDtl.getAmount();
         }
-        return moneySprinkle.getToken();
+        return newToken;
     }
 
     @Override
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public double pickup(String token, String userId) {
-        MoneySprinkleDtl moneySprinkleDtl = moneySprinkleDtlRepository.findTop1ByToken(token);
+        MoneySprinkleDtl moneySprinkleDtl =
+                moneySprinkleDtlRepository.findTop1ByToken(token);
         moneySprinkleDtl.setReceiver(userId);
         moneySprinkleDtlRepository.save(moneySprinkleDtl);
         return moneySprinkleDtl.getAmount();
     }
 
-    private boolean isLast(MoneySprinkle moneySprinkle, int index) {
-        return index == moneySprinkle.getCount() -1;
+    private boolean isLast(Integer sprinkleCount, Integer index) {
+        return index == sprinkleCount - 1;
     }
 
     private double getRandomAmount(double balance, Random random) {
@@ -64,6 +84,6 @@ public class MoneySprinklingServiceImpl implements MoneySprinklingService {
     }
 
     private int getNumbersFromOneToNine(Random random) {
-        return random.nextInt(9) +1;
+        return random.nextInt(9) + 1;
     }
 }
