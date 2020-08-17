@@ -47,7 +47,7 @@ public class MoneySprinklingServiceImpl implements MoneySprinklingService {
     }
 
     @Override
-    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public double pickup(String token, String userId) {
         MoneySprinkleDtl moneySprinkleDtl = moneySprinkleDtlRepository.findTop1ByToken(token);
         moneySprinkleDtl.setReceiver(userId);
