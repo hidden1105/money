@@ -1,11 +1,8 @@
 package pay.jh.me.moneysprinkling.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import pay.jh.me.moneysprinkling.dto.MoneySprinkleDto;
 import pay.jh.me.moneysprinkling.model.MoneySprinkle;
 import pay.jh.me.moneysprinkling.service.MoneySprinklingService;
 import pay.jh.me.moneysprinkling.service.MoneySprinklingValidateService;
@@ -24,13 +21,11 @@ public class MoneySprinklingContoller {
 
     @PostMapping(value = "/sprinkle")
     @ResponseBody
-    public String sprinkle(@RequestHeader("X-ROOM-ID") String roomId, @RequestHeader("X-USER-ID") String userId, MoneySprinkle moneySprinkle) {
-        log.info("roomId={}, userId={}, body={}", roomId, userId, moneySprinkle);
-        moneySprinkle.setRoomId(roomId);
-        moneySprinkle.setUserId(userId);
-        moneySprinkle.setAmount(300); // param으로 왜 안들어 오는겨???
-        moneySprinkle.setCount(3); // param으로 왜 안들어 오는겨???
-        return moneySprinklingService.sprinkle(roomId, userId, moneySprinkle);
+    public String sprinkle(@RequestHeader("X-ROOM-ID") String roomId, @RequestHeader("X-USER-ID") String userId, @RequestBody MoneySprinkleDto moneySprinkleDto) {
+        log.info("roomId={}, userId={}, body={}", roomId, userId, moneySprinkleDto);
+        moneySprinkleDto.setRoomId(roomId);
+        moneySprinkleDto.setUserId(userId);
+        return moneySprinklingService.sprinkle(moneySprinkleDto);
     }
 
     @PostMapping(value = "/pick-up")

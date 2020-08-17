@@ -1,19 +1,18 @@
 package pay.jh.me.moneysprinkling.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import pay.jh.me.moneysprinkling.dao.MoneySprinkleDtlRepository;
 import pay.jh.me.moneysprinkling.dao.MoneySprinkleRepository;
+import pay.jh.me.moneysprinkling.dto.MoneySprinkleDto;
 import pay.jh.me.moneysprinkling.model.MoneySprinkle;
 import pay.jh.me.moneysprinkling.model.MoneySprinkleDtl;
 import pay.jh.me.moneysprinkling.util.TokenGenerator;
 
-import java.util.Optional;
 import java.util.Random;
-
-import static org.springframework.transaction.annotation.Isolation.SERIALIZABLE;
 
 @Slf4j
 @Service
@@ -31,7 +30,9 @@ public class MoneySprinklingServiceImpl implements MoneySprinklingService {
 
     @Transactional
     @Override
-    public String sprinkle(String roomId, String userId, MoneySprinkle moneySprinkle) {
+    public String sprinkle(MoneySprinkleDto moneySprinkleDto) {
+        ModelMapper modelMapper = new ModelMapper(); // TODO autowire로 개선
+        MoneySprinkle moneySprinkle = modelMapper.map(moneySprinkleDto, MoneySprinkle.class);
         moneySprinkle.setToken(tokenGenerator.generate());
         moneySprinkleRepository.save(moneySprinkle);
 
