@@ -21,8 +21,7 @@ public class MoneySprinklingServiceImpl implements MoneySprinklingService {
     private final MoneySprinkleRepository moneySprinkleRepository;
     private final MoneySprinkleDtlRepository moneySprinkleDtlRepository;
 
-    public MoneySprinklingServiceImpl(TokenGenerator tokenGenerator, MoneySprinkleRepository moneySprinkleRepository
-            , MoneySprinkleDtlRepository moneySprinkleDtlRepository) {
+    public MoneySprinklingServiceImpl(TokenGenerator tokenGenerator, MoneySprinkleRepository moneySprinkleRepository, MoneySprinkleDtlRepository moneySprinkleDtlRepository) {
         this.tokenGenerator = tokenGenerator;
         this.moneySprinkleRepository = moneySprinkleRepository;
         this.moneySprinkleDtlRepository = moneySprinkleDtlRepository;
@@ -40,7 +39,7 @@ public class MoneySprinklingServiceImpl implements MoneySprinklingService {
         Random random = new Random();
         for (int index = 0; index < moneySprinkle.getCount(); index++) {
            MoneySprinkleDtl moneySprinkleDtl = new MoneySprinkleDtl(moneySprinkle.getToken());
-           moneySprinkleDtl.setAmount(isLast(moneySprinkle, index) ? balance : getRandomAmount(balance, random));
+           moneySprinkleDtl.setAmount(isLast(moneySprinkle.getCount(), index) ? balance : getRandomAmount(balance, random));
            moneySprinkleDtlRepository.save(moneySprinkleDtl);
            balance -= moneySprinkleDtl.getAmount();
         }
@@ -56,8 +55,8 @@ public class MoneySprinklingServiceImpl implements MoneySprinklingService {
         return moneySprinkleDtl.getAmount();
     }
 
-    private boolean isLast(MoneySprinkle moneySprinkle, int index) {
-        return index == moneySprinkle.getCount() -1;
+    private boolean isLast(Integer sprinkleCount, int index) {
+        return index == sprinkleCount - 1;
     }
 
     private double getRandomAmount(double balance, Random random) {
@@ -65,6 +64,6 @@ public class MoneySprinklingServiceImpl implements MoneySprinklingService {
     }
 
     private int getNumbersFromOneToNine(Random random) {
-        return random.nextInt(9) +1;
+        return random.nextInt(9) + 1;
     }
 }
