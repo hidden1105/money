@@ -10,7 +10,7 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MoneySprinkleDto {
+public class MoneySprinkleRequest {
     private String roomId;
     private String userId;
     @NotNull

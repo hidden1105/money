@@ -1,9 +1,9 @@
 package pay.jh.me.moneysprinkling.service;
 
-import pay.jh.me.moneysprinkling.dto.MoneySprinkleDto;
+import pay.jh.me.moneysprinkling.dto.MoneySprinkleRequest;
 
 public interface MoneySprinklingService {
-    String sprinkle(MoneySprinkleDto moneySprinkleDto);
+    String sprinkle(MoneySprinkleRequest moneySprinkleRequest);
 
     double pickup(String token, String userId);
 }

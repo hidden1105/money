@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
-import pay.jh.me.moneysprinkling.dto.MoneySprinkleDto;
+import pay.jh.me.moneysprinkling.dto.MoneySprinkleRequest;
 import pay.jh.me.moneysprinkling.service.MoneySprinklingService;
 import pay.jh.me.moneysprinkling.service.MoneySprinklingValidateService;
 
@@ -25,14 +25,14 @@ public class MoneySprinklingContoller {
     @PostMapping(value = "/sprinkle")
     @ResponseBody
     public ResponseEntity sprinkle(@RequestHeader("X-ROOM-ID") String roomId, @RequestHeader("X-USER-ID") String userId
-            , @RequestBody @Valid MoneySprinkleDto moneySprinkleDto, Errors errors) {
-        log.info("roomId={}, userId={}, body={}", roomId, userId, moneySprinkleDto);
+            , @RequestBody @Valid MoneySprinkleRequest moneySprinkleRequest, Errors errors) {
+        log.info("roomId={}, userId={}, body={}", roomId, userId, moneySprinkleRequest);
         if (errors.hasErrors()) {
             return ResponseEntity.badRequest().build();
         }
-        moneySprinkleDto.setRoomId(roomId);
-        moneySprinkleDto.setUserId(userId);
-        return ResponseEntity.ok(moneySprinklingService.sprinkle(moneySprinkleDto));
+        moneySprinkleRequest.setRoomId(roomId);
+        moneySprinkleRequest.setUserId(userId);
+        return ResponseEntity.ok(moneySprinklingService.sprinkle(moneySprinkleRequest));
     }
 
     @PostMapping(value = "/pick-up")

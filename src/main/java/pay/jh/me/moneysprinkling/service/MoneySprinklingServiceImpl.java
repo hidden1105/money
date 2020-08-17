@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import pay.jh.me.moneysprinkling.dao.MoneySprinkleDtlRepository;
 import pay.jh.me.moneysprinkling.dao.MoneySprinkleRepository;
-import pay.jh.me.moneysprinkling.dto.MoneySprinkleDto;
+import pay.jh.me.moneysprinkling.dto.MoneySprinkleRequest;
 import pay.jh.me.moneysprinkling.endity.MoneySprinkle;
 import pay.jh.me.moneysprinkling.endity.MoneySprinkleDtl;
 import pay.jh.me.moneysprinkling.util.TokenGenerator;
@@ -29,9 +29,9 @@ public class MoneySprinklingServiceImpl implements MoneySprinklingService {
 
     @Transactional
     @Override
-    public String sprinkle(MoneySprinkleDto moneySprinkleDto) {
+    public String sprinkle(MoneySprinkleRequest moneySprinkleRequest) {
         ModelMapper modelMapper = new ModelMapper(); // TODO autowire로 개선
-        MoneySprinkle moneySprinkle = modelMapper.map(moneySprinkleDto, MoneySprinkle.class);
+        MoneySprinkle moneySprinkle = modelMapper.map(moneySprinkleRequest, MoneySprinkle.class);
         moneySprinkle.setToken(tokenGenerator.generate());
         moneySprinkleRepository.save(moneySprinkle);
 
