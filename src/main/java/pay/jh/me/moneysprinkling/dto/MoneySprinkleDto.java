@@ -1,7 +1,8 @@
 package pay.jh.me.moneysprinkling.dto;
 
 import lombok.*;
-import com.sun.istack.NotNull;
+
+import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
