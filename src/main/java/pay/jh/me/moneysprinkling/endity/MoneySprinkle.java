@@ -1,4 +1,4 @@
-package pay.jh.me.moneysprinkling.model;
+package pay.jh.me.moneysprinkling.endity;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

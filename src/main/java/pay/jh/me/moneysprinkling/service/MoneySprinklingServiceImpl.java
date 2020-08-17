@@ -8,8 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 import pay.jh.me.moneysprinkling.dao.MoneySprinkleDtlRepository;
 import pay.jh.me.moneysprinkling.dao.MoneySprinkleRepository;
 import pay.jh.me.moneysprinkling.dto.MoneySprinkleDto;
-import pay.jh.me.moneysprinkling.model.MoneySprinkle;
-import pay.jh.me.moneysprinkling.model.MoneySprinkleDtl;
+import pay.jh.me.moneysprinkling.endity.MoneySprinkle;
+import pay.jh.me.moneysprinkling.endity.MoneySprinkleDtl;
 import pay.jh.me.moneysprinkling.util.TokenGenerator;
 
 import java.util.Random;
