@@ -1,11 +1,6 @@
 package pay.jh.me.moneysprinkling.endity;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -47,4 +42,10 @@ public class MoneySprinkleDtl {
     @NonNull
     private String receiver;
     private LocalDateTime receivedAt;
+
+    @Builder
+    public MoneySprinkleDtl(double amount, String receiver) {
+        this.amount = amount;
+        this.receiver = receiver;
+    }
 }

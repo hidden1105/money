@@ -8,7 +8,6 @@ import javax.validation.constraints.NotNull;
 @Setter
 @ToString
 @NoArgsConstructor
-@AllArgsConstructor
 @Builder
 public class MoneySprinkleRequest {
     private String roomId;
@@ -17,4 +16,12 @@ public class MoneySprinkleRequest {
     private Integer amount;
     @NotNull
     private Integer count;
+
+    @Builder
+    public MoneySprinkleRequest(String roomId, String userId, @NotNull Integer amount, @NotNull Integer count) {
+        this.roomId = roomId;
+        this.userId = userId;
+        this.amount = amount;
+        this.count = count;
+    }
 }
